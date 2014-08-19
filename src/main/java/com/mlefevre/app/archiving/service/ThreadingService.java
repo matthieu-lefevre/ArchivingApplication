@@ -1,11 +1,20 @@
 package com.mlefevre.app.archiving.service;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Matthieu
- * Date: 17/08/14
- * Time: 17:18
- * To change this template use File | Settings | File Templates.
- */
+import com.mlefevre.app.archiving.exception.ThreadingException;
+import com.mlefevre.app.archiving.threading.ArchivingThread;
+
+import java.util.List;
+
+
 public interface ThreadingService {
+
+
+    List<ArchivingThread> dispatch(List<String> documentIds) throws ThreadingException;
+
+
+    ArchivingThread create(List<String> documentIds, String name, int startIndex, int stopIndex) throws ThreadingException;
+
+
+    void execute(List<ArchivingThread> threads) throws ThreadingException;
+
 }

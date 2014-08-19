@@ -1,5 +1,6 @@
 package com.mlefevre.app.archiving.service;
 
+import com.mlefevre.app.archiving.exception.ThreadingException;
 import com.mlefevre.app.archiving.threading.ArchivingThread;
 import com.mlefevre.app.archiving.util.math.Division;
 import org.slf4j.Logger;
@@ -19,8 +20,8 @@ public class ThreadingServiceImpl implements ThreadingService {
     private final static int MAX_SIMULTANEOUS_THREADS = 10;
 
 
-
-    public List<ArchivingThread> dispatch(List<String> documentIds) {
+    @Override
+    public List<ArchivingThread> dispatch(List<String> documentIds) throws ThreadingException {
         Division division = new Division(documentIds.size(), MAX_DOCUMENTS_PER_THREAD);
         division.calculate();
 
@@ -43,19 +44,35 @@ public class ThreadingServiceImpl implements ThreadingService {
     }
 
 
-    public ArchivingThread create(List<String> documentIds, String name, int startIndex, int stopIndex) {
-        List<String> threadDocumentIds = documentIds.subList(startIndex, stopIndex);
-        ArchivingThread thread = new ArchivingThread(name, threadDocumentIds);
+    @Override
+    public ArchivingThread create(List<String> documentIds, String name, int startIndex, int stopIndex) throws ThreadingException {
+        ArchivingThread thread = null;
+        try {
+            List<String> threadDocumentIds = documentIds.subList(startIndex, stopIndex);
+            thread = new ArchivingThread(name, threadDocumentIds);
+
+        } catch(IndexOutOfBoundsException e) {
+            throw new ThreadingException("An error occurred while building threads.", e);
+        }
 
         return thread;
     }
 
-    public int getLastDocumentIdIndexForThread(int currentThread, int threadsNb, int documentIdStartIndex, int documentIdsNb) {
+    @Override
+    public void execute(List<ArchivingThread> threads) throws ThreadingException {
+
+        for(ArchivingThread thread : threads) {
+            Thread.State state = thread.getState();
+        }
+
+    }
+
+    private int getLastDocumentIdIndexForThread(int currentThread, int threadsNb, int documentIdStartIndex, int documentIdsNb) {
         int documentIdLastIndex;
         if(currentThread == threadsNb) {
-            documentIdLastIndex = documentIdsNb - 1;
+            documentIdLastIndex = documentIdsNb;
         } else {
-            documentIdLastIndex = documentIdStartIndex + MAX_DOCUMENTS_PER_THREAD - 1; // to get exactly MAX_DOCUMENTS_PER_THREAD into thread
+            documentIdLastIndex = documentIdStartIndex + MAX_DOCUMENTS_PER_THREAD; // to get exactly MAX_DOCUMENTS_PER_THREAD into thread
         }
 
         return documentIdLastIndex;

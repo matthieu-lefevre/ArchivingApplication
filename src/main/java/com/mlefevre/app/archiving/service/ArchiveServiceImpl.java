@@ -1,6 +1,8 @@
 package com.mlefevre.app.archiving.service;
 
 import com.mlefevre.app.archiving.exception.ArchiveException;
+import com.mlefevre.app.archiving.exception.ThreadingException;
+import com.mlefevre.app.archiving.threading.ArchivingThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +28,15 @@ public class ArchiveServiceImpl implements ArchiveService {
 
     @Override
     public void archiveDocuments(List<String> documentIds) throws ArchiveException {
+        try {
+            List<ArchivingThread> threads = this.threadingService.dispatch(documentIds);
+            for(ArchivingThread thread : threads) {
+                thread.start();
+            }
 
+        } catch (ThreadingException e) {
+            throw new ArchiveException(e.getMessage(), e);
+        }
     }
 
     @Override

@@ -25,4 +25,9 @@ public class ArchivingThread extends Thread {
     }
 
 
+    public List<String> getDocumentIds() {
+        return this.documentIds;
+    }
+
+
 }
