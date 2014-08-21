@@ -1,9 +1,12 @@
 package com.mlefevre.app.archiving.controller;
 
 import com.mlefevre.app.archiving.entity.EntityClass;
+import com.mlefevre.app.archiving.exception.ThreadingException;
 import com.mlefevre.app.archiving.repository.EntityArchiveRepository;
 import com.mlefevre.app.archiving.repository.EntityMainRepository;
+import com.mlefevre.app.archiving.service.ThreadingService;
 import com.mlefevre.app.archiving.threading.ArchivingThread;
+import com.mlefevre.app.archiving.threading.NotifyingThread;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -24,6 +27,10 @@ public class HomeController {
     private EntityMainRepository entityMainRepository;
 
 
+    @Autowired
+    private ThreadingService threadingService;
+
+
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String home(ModelMap model) {
@@ -37,12 +44,15 @@ public class HomeController {
         model.addAttribute("archive", archiveEntities);
 
 
-        Thread thread1 = new ArchivingThread("first", Arrays.asList("1", "2", "3"));
-        thread1.start();
+        NotifyingThread thread1 = new ArchivingThread("Thread1", Arrays.asList("1", "2", "3"));
+        NotifyingThread thread2 = new ArchivingThread("Thread2", Arrays.asList("4", "5", "6"));
 
-        Thread thread2 = new ArchivingThread("second", Arrays.asList("4", "5", "6"));
-        thread2.start();
+        try {
+            this.threadingService.execute(Arrays.asList(thread1, thread2));
 
+        } catch (ThreadingException e) {
+            e.printStackTrace();
+        }
 
         return "home";
     }

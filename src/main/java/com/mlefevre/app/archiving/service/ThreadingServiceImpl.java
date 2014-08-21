@@ -2,6 +2,8 @@ package com.mlefevre.app.archiving.service;
 
 import com.mlefevre.app.archiving.exception.ThreadingException;
 import com.mlefevre.app.archiving.threading.ArchivingThread;
+import com.mlefevre.app.archiving.threading.NotifyingThread;
+import com.mlefevre.app.archiving.threading.ThreadExecutor;
 import com.mlefevre.app.archiving.util.math.Division;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,12 +61,9 @@ public class ThreadingServiceImpl implements ThreadingService {
     }
 
     @Override
-    public void execute(List<ArchivingThread> threads) throws ThreadingException {
-
-        for(ArchivingThread thread : threads) {
-            Thread.State state = thread.getState();
-        }
-
+    public void execute(List<NotifyingThread> threads) throws ThreadingException {
+        ThreadExecutor executor = new ThreadExecutor(threads);
+        executor.execute(MAX_SIMULTANEOUS_THREADS);
     }
 
     private int getLastDocumentIdIndexForThread(int currentThread, int threadsNb, int documentIdStartIndex, int documentIdsNb) {

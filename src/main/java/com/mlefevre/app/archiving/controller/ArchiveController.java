@@ -2,6 +2,7 @@ package com.mlefevre.app.archiving.controller;
 
 import com.mlefevre.app.archiving.exception.ArchiveException;
 import com.mlefevre.app.archiving.service.ArchiveService;
+import com.mlefevre.app.archiving.threading.ThreadCompleteListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/archive")
-public class ArchiveController {
+public class ArchiveController implements ThreadCompleteListener {
 
     private static Logger LOG = LoggerFactory.getLogger(ArchiveController.class);
 
@@ -55,4 +56,8 @@ public class ArchiveController {
     }
 
 
+    @Override
+    public void notifyThreadCompleted(Thread thread) {
+        System.out.println(thread.getName() + " finished!");
+    }
 }
