@@ -15,13 +15,6 @@
         <c:forEach var="mainItem" items="${main}">
             <p>${mainItem}</p>
         </c:forEach>
-
-
-        <br/><br/>
-        <h3>Archive items</h3>
-        <c:forEach var="archiveItem" items="${archive}">
-            <p>${archiveItem}</p>
-        </c:forEach>
     </body>
 
 </html>

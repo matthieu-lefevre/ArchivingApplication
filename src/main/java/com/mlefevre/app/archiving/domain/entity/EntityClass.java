@@ -1,4 +1,4 @@
-package com.mlefevre.app.archiving.entity;
+package com.mlefevre.app.archiving.domain.entity;
 
 import javax.persistence.*;
 

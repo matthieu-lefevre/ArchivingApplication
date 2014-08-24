@@ -2,20 +2,25 @@ package com.mlefevre.app.archiving.service;
 
 import com.mlefevre.app.archiving.exception.ThreadingException;
 import com.mlefevre.app.archiving.threading.ArchivingThread;
+import com.mlefevre.app.archiving.threading.ArchivingThreadExecutor;
 import com.mlefevre.app.archiving.threading.NotifyingThread;
-import com.mlefevre.app.archiving.threading.ThreadExecutor;
 import com.mlefevre.app.archiving.util.math.Division;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class ThreadingServiceImpl implements ThreadingService {
+public class ArchiveThreadingServiceImpl implements ArchiveThreadingService {
 
-    private static Logger LOG = LoggerFactory.getLogger(ThreadingService.class);
+    private static Logger LOG = LoggerFactory.getLogger(ArchiveThreadingService.class);
+
+    @Autowired
+    private ApplicationContext context;
 
 
     private final static int MAX_DOCUMENTS_PER_THREAD = 200;
@@ -23,20 +28,20 @@ public class ThreadingServiceImpl implements ThreadingService {
 
 
     @Override
-    public List<ArchivingThread> dispatch(List<String> documentIds) throws ThreadingException {
+    public List<NotifyingThread> dispatch(List<String> documentIds) throws ThreadingException {
         Division division = new Division(documentIds.size(), MAX_DOCUMENTS_PER_THREAD);
         division.calculate();
 
         int threadsNb = division.getQuotient() + 1;
         LOG.info("Creating " + threadsNb + " threads.");
-        List<ArchivingThread> threads = new ArrayList<ArchivingThread>(threadsNb);
+        List<NotifyingThread> threads = new ArrayList<NotifyingThread>(threadsNb);
 
         int documentIdsStartIndex = 0;
 
         for(int i = 1; i <= threadsNb; i++) {
             int documentIdsLastIndex = this.getLastDocumentIdIndexForThread(i, threadsNb, documentIdsStartIndex, documentIds.size());
 
-            ArchivingThread thread = this.create(documentIds, "Thread" + i, documentIdsStartIndex, documentIdsLastIndex);
+            NotifyingThread thread = this.create(documentIds, "Thread" + i, documentIdsStartIndex, documentIdsLastIndex);
             threads.add(thread);
 
             documentIdsStartIndex = documentIdsLastIndex;
@@ -51,7 +56,7 @@ public class ThreadingServiceImpl implements ThreadingService {
         ArchivingThread thread = null;
         try {
             List<String> threadDocumentIds = documentIds.subList(startIndex, stopIndex);
-            thread = new ArchivingThread(name, threadDocumentIds);
+            thread = new ArchivingThread(name, null);
 
         } catch(IndexOutOfBoundsException e) {
             throw new ThreadingException("An error occurred while building threads.", e);
@@ -62,7 +67,7 @@ public class ThreadingServiceImpl implements ThreadingService {
 
     @Override
     public void execute(List<NotifyingThread> threads) throws ThreadingException {
-        ThreadExecutor executor = new ThreadExecutor(threads);
+        ArchivingThreadExecutor executor = new ArchivingThreadExecutor(threads);
         executor.execute(MAX_SIMULTANEOUS_THREADS);
     }
 

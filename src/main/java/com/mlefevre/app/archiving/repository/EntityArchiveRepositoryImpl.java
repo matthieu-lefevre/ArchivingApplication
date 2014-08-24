@@ -1,6 +1,6 @@
 package com.mlefevre.app.archiving.repository;
 
-import com.mlefevre.app.archiving.entity.EntityClass;
+import com.mlefevre.app.archiving.domain.entity.EntityClass;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,5 +36,10 @@ public class EntityArchiveRepositoryImpl implements EntityArchiveRepository {
                 .list();
 
         return entities;
+    }
+
+    @Override
+    public void save(EntityClass entity) {
+        this.sessionFactory.getCurrentSession().saveOrUpdate(entity);
     }
 }

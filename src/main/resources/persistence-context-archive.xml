@@ -19,7 +19,7 @@
 
     <bean id="archiveSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
         <property name="dataSource" ref="archiveDataSource" />
-        <property name="packagesToScan" value="com.mlefevre.app.archiving.entity" />
+        <property name="packagesToScan" value="com.mlefevre.app.archiving.domain.entity" />
         <property name="hibernateProperties">
             <props>
                 <prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto}</prop>

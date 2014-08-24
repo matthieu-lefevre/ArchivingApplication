@@ -1,15 +1,16 @@
 package com.mlefevre.app.archiving.threading;
 
+
 import com.mlefevre.app.archiving.service.ArchiveService;
 import org.springframework.context.ApplicationContext;
 
 import java.util.Date;
 
-public class ArchivingThread extends NotifyingThread {
+public class CleaningThread extends NotifyingThread {
 
     private ArchivingThreadContext context;
 
-    public ArchivingThread(String name, ArchivingThreadContext context) {
+    public CleaningThread(String name, ArchivingThreadContext context) {
         this.setName(name);
         this.context = context;
     }
@@ -23,13 +24,13 @@ public class ArchivingThread extends NotifyingThread {
                 return;
             }
             final ArchiveService archiveService = (ArchiveService) applicationContext.getBean("archiveService");
-            archiveService.archiveDocuments(this.context.getDocumentIds());
+            archiveService.cleanArchivedDocuments(this.context.getDocumentIds());
 
         } catch(Exception e) {
             e.printStackTrace();
         }
-
     }
+
 
     @Override
     public Date getStartTime() {

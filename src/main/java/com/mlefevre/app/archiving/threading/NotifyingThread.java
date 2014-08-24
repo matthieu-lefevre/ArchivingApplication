@@ -1,35 +1,44 @@
 package com.mlefevre.app.archiving.threading;
 
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.Date;
 
 public abstract class NotifyingThread extends Thread {
 
-    private final Set<ThreadCompleteListener> listeners = new CopyOnWriteArraySet<ThreadCompleteListener>();
+    protected Date startTime;
+    protected Date endTime;
 
-    public final void addListener(final ThreadCompleteListener listener) {
-        listeners.add(listener);
+    public abstract Date getStartTime();
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
     }
 
-    public final void removeListener(final ThreadCompleteListener listener) {
-        listeners.remove(listener);
+    public abstract Date getEndTime();
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
     }
 
-    private final void notifyListeners() {
-        for(ThreadCompleteListener listener : this.listeners) {
-            listener.notifyThreadCompleted(this);
-        }
+
+    private NotifyingThreadListener listener;
+
+    public void setListener(NotifyingThreadListener listener) {
+        this.listener = listener;
     }
+
 
     @Override
     public void run() {
         try {
-            doRun();
+            this.listener.onStart(this);
+            execute();
+        } catch(Exception e) {
+            this.listener.onFailure(this);
         } finally {
-            notifyListeners();
+            this.listener.onComplete(this);
         }
     }
 
-    public abstract void doRun();
+    public abstract void execute();
 
 }
