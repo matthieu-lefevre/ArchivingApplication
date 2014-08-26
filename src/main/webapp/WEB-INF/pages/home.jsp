@@ -15,6 +15,13 @@
         <c:forEach var="mainItem" items="${main}">
             <p>${mainItem}</p>
         </c:forEach>
+
+        <br/><br/>
+        <form action="http://localhost:8080/archive/documents" method="POST">
+            <textarea rows="7" cols="30"></textarea>
+            <input type="submit" value="Submit" />
+        </form>
+
     </body>
 
 </html>

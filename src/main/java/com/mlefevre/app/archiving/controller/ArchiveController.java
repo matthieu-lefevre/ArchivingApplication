@@ -33,6 +33,7 @@ public class ArchiveController {
     @RequestMapping(value = "/documents", method = RequestMethod.POST)
     public String init(@RequestBody String archiveSqlQuery, ModelMap modelMap) {
         try {
+            System.out.println(archiveSqlQuery);
             List<EntityClass> documents = this.archiveService.getDocumentsToArchive(archiveSqlQuery);
             modelMap.addAttribute("documents", documents);
 

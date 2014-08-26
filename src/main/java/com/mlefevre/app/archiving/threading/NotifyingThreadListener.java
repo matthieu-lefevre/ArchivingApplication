@@ -1,11 +1,11 @@
 package com.mlefevre.app.archiving.threading;
 
-public interface NotifyingThreadListener {
+public interface NotifyingThreadListener<T extends NotifyingThread> {
 
-    void onStart(final NotifyingThread thread);
+    void onStart(final T thread);
 
-    void onComplete(final NotifyingThread thread);
+    void onComplete(final T thread);
 
-    void onFailure(final NotifyingThread thread);
+    void onFailure(final T thread);
 
 }

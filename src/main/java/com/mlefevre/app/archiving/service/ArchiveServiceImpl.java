@@ -7,6 +7,7 @@ import com.mlefevre.app.archiving.exception.ThreadingException;
 import com.mlefevre.app.archiving.repository.EntityArchiveRepository;
 import com.mlefevre.app.archiving.repository.EntityMainRepository;
 import com.mlefevre.app.archiving.threading.ArchivingThread;
+import com.mlefevre.app.archiving.threading.ArchivingThreadExecutor;
 import com.mlefevre.app.archiving.threading.NotifyingThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +62,10 @@ public class ArchiveServiceImpl implements ArchiveService {
     public void archiveDocuments() throws ArchiveException {
         try {
             List<NotifyingThread> threads = this.threadingService.dispatch(this.archiveBean.getDocumentIds());
+            ArchivingThreadExecutor<NotifyingThread> executor = new ArchivingThreadExecutor<NotifyingThread>(threads);
+            executor.execute(2);
 
+            System.out.println("Number od threads played: " + executor.getNumberOfThreadsPlayed());
 
         } catch (ThreadingException e) {
             throw new ArchiveException(e.getMessage(), e);

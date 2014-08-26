@@ -40,6 +40,5 @@ public class EntityArchiveRepositoryImpl implements EntityArchiveRepository {
 
     @Override
     public void save(EntityClass entity) {
-        this.sessionFactory.getCurrentSession().saveOrUpdate(entity);
-    }
+        this.sessionFactory.getCurrentSession().save(entity);    }
 }

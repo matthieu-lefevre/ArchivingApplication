@@ -2,6 +2,7 @@ package com.mlefevre.app.archiving.service;
 
 import com.mlefevre.app.archiving.exception.ThreadingException;
 import com.mlefevre.app.archiving.threading.ArchivingThread;
+import com.mlefevre.app.archiving.threading.ArchivingThreadContext;
 import com.mlefevre.app.archiving.threading.ArchivingThreadExecutor;
 import com.mlefevre.app.archiving.threading.NotifyingThread;
 import com.mlefevre.app.archiving.util.math.Division;
@@ -23,7 +24,7 @@ public class ArchiveThreadingServiceImpl implements ArchiveThreadingService {
     private ApplicationContext context;
 
 
-    private final static int MAX_DOCUMENTS_PER_THREAD = 200;
+    private final static int MAX_DOCUMENTS_PER_THREAD = 3;
     private final static int MAX_SIMULTANEOUS_THREADS = 10;
 
 
@@ -56,7 +57,9 @@ public class ArchiveThreadingServiceImpl implements ArchiveThreadingService {
         ArchivingThread thread = null;
         try {
             List<String> threadDocumentIds = documentIds.subList(startIndex, stopIndex);
-            thread = new ArchivingThread(name, null);
+            ArchivingThreadContext ctx = new ArchivingThreadContext(this.context);
+            ctx.setDocumentIds(threadDocumentIds);
+            thread = new ArchivingThread(name, ctx);
 
         } catch(IndexOutOfBoundsException e) {
             throw new ThreadingException("An error occurred while building threads.", e);
