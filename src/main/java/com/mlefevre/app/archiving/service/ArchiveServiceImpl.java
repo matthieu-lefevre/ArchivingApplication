@@ -62,10 +62,7 @@ public class ArchiveServiceImpl implements ArchiveService {
     public void archiveDocuments() throws ArchiveException {
         try {
             List<NotifyingThread> threads = this.threadingService.dispatch(this.archiveBean.getDocumentIds());
-            ArchivingThreadExecutor<NotifyingThread> executor = new ArchivingThreadExecutor<NotifyingThread>(threads);
-            executor.execute(2);
-
-            System.out.println("Number od threads played: " + executor.getNumberOfThreadsPlayed());
+            this.threadingService.execute(threads);
 
         } catch (ThreadingException e) {
             throw new ArchiveException(e.getMessage(), e);

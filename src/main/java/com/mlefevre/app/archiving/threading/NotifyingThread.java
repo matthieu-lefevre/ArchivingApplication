@@ -30,12 +30,12 @@ public abstract class NotifyingThread extends Thread {
     @Override
     public void run() {
         try {
-            this.listener.onStart(this);
+            //this.listener.onStart(this);
             execute();
         } catch(Exception e) {
-            this.listener.onFailure(this);
+            //this.listener.onFailure(this);
         } finally {
-            this.listener.onComplete(this);
+            //this.listener.onComplete(this);
         }
     }
 

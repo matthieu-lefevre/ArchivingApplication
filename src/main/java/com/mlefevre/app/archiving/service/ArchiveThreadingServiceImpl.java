@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.*;
 
 @Service
 public class ArchiveThreadingServiceImpl implements ArchiveThreadingService {
@@ -70,8 +71,22 @@ public class ArchiveThreadingServiceImpl implements ArchiveThreadingService {
 
     @Override
     public void execute(List<NotifyingThread> threads) throws ThreadingException {
-        ArchivingThreadExecutor executor = new ArchivingThreadExecutor(threads);
-        executor.execute(MAX_SIMULTANEOUS_THREADS);
+        try {
+            ExecutorService threadPool = Executors.newFixedThreadPool(MAX_SIMULTANEOUS_THREADS);
+            for(NotifyingThread thread : threads) {
+                Future<String> result = threadPool.submit(thread, "done");
+                System.out.println(thread.getName() + " " + result.get());
+            }
+
+            threadPool.awaitTermination(60, TimeUnit.SECONDS);
+            threadPool.shutdownNow();
+
+        } catch(InterruptedException e) {
+            throw new ThreadingException("", e);
+        } catch (ExecutionException e) {
+            throw new ThreadingException("", e);
+        }
+
     }
 
     private int getLastDocumentIdIndexForThread(int currentThread, int threadsNb, int documentIdStartIndex, int documentIdsNb) {
