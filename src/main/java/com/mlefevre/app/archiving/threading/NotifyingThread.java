@@ -1,24 +1,12 @@
 package com.mlefevre.app.archiving.threading;
 
-import java.util.Date;
+import com.mlefevre.app.archiving.domain.model.ThreadReport;
 
 public abstract class NotifyingThread extends Thread {
 
-    protected Date startTime;
-    protected Date endTime;
+    protected ArchivingThreadContext context;
 
-    public abstract Date getStartTime();
-
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
-    }
-
-    public abstract Date getEndTime();
-
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
-    }
-
+    ThreadReport report;
 
     private NotifyingThreadListener listener;
 
@@ -30,15 +18,27 @@ public abstract class NotifyingThread extends Thread {
     @Override
     public void run() {
         try {
-            //this.listener.onStart(this);
+            this.listener.onStart(this);
             execute();
         } catch(Exception e) {
-            //this.listener.onFailure(this);
+            this.listener.onFailure(this, e);
         } finally {
-            //this.listener.onComplete(this);
+            this.listener.onComplete(this);
         }
     }
 
     public abstract void execute();
 
+
+    public ThreadReport getReport() {
+        return report;
+    }
+
+    public void setReport(ThreadReport report) {
+        this.report = report;
+    }
+
+    public ArchivingThreadContext getContext() {
+        return context;
+    }
 }

@@ -1,9 +1,9 @@
 package com.mlefevre.app.archiving.service;
 
 import com.mlefevre.app.archiving.exception.ThreadingException;
+import com.mlefevre.app.archiving.threading.ArchiveThreadPoolExecutor;
 import com.mlefevre.app.archiving.threading.ArchivingThread;
 import com.mlefevre.app.archiving.threading.ArchivingThreadContext;
-import com.mlefevre.app.archiving.threading.ArchivingThreadExecutor;
 import com.mlefevre.app.archiving.threading.NotifyingThread;
 import com.mlefevre.app.archiving.util.math.Division;
 import org.slf4j.Logger;
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
 
 @Service
 public class ArchiveThreadingServiceImpl implements ArchiveThreadingService {
@@ -26,7 +25,7 @@ public class ArchiveThreadingServiceImpl implements ArchiveThreadingService {
 
 
     private final static int MAX_DOCUMENTS_PER_THREAD = 3;
-    private final static int MAX_SIMULTANEOUS_THREADS = 10;
+    private final static int THREAD_POOL_SIZE = 5;
 
 
     @Override
@@ -71,22 +70,8 @@ public class ArchiveThreadingServiceImpl implements ArchiveThreadingService {
 
     @Override
     public void execute(List<NotifyingThread> threads) throws ThreadingException {
-        try {
-            ExecutorService threadPool = Executors.newFixedThreadPool(MAX_SIMULTANEOUS_THREADS);
-            for(NotifyingThread thread : threads) {
-                Future<String> result = threadPool.submit(thread, "done");
-                System.out.println(thread.getName() + " " + result.get());
-            }
-
-            threadPool.awaitTermination(60, TimeUnit.SECONDS);
-            threadPool.shutdownNow();
-
-        } catch(InterruptedException e) {
-            throw new ThreadingException("", e);
-        } catch (ExecutionException e) {
-            throw new ThreadingException("", e);
-        }
-
+        ArchiveThreadPoolExecutor executor = new ArchiveThreadPoolExecutor(threads);
+        executor.execute(THREAD_POOL_SIZE);
     }
 
     private int getLastDocumentIdIndexForThread(int currentThread, int threadsNb, int documentIdStartIndex, int documentIdsNb) {

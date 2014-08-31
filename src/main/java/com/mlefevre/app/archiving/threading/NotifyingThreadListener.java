@@ -6,6 +6,6 @@ public interface NotifyingThreadListener<T extends NotifyingThread> {
 
     void onComplete(final T thread);
 
-    void onFailure(final T thread);
+    <U extends Exception> void onFailure(T thread, U exception);
 
 }

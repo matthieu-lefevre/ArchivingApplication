@@ -32,14 +32,5 @@ public class CleaningThread extends NotifyingThread {
     }
 
 
-    @Override
-    public Date getStartTime() {
-        return this.startTime;
-    }
-
-    @Override
-    public Date getEndTime() {
-        return this.endTime;
-    }
 
 }

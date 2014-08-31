@@ -6,8 +6,6 @@ import com.mlefevre.app.archiving.exception.ArchiveException;
 import com.mlefevre.app.archiving.exception.ThreadingException;
 import com.mlefevre.app.archiving.repository.EntityArchiveRepository;
 import com.mlefevre.app.archiving.repository.EntityMainRepository;
-import com.mlefevre.app.archiving.threading.ArchivingThread;
-import com.mlefevre.app.archiving.threading.ArchivingThreadExecutor;
 import com.mlefevre.app.archiving.threading.NotifyingThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,6 +70,7 @@ public class ArchiveServiceImpl implements ArchiveService {
     @Override
     public void archiveDocuments(List<String> documentIds) throws ArchiveException {
         for(String documentId : documentIds) {
+            System.out.println("Document: " + documentId);
             this.archiveDocument(documentId);
         }
     }

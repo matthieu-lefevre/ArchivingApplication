@@ -7,7 +7,6 @@ import java.util.Date;
 
 public class ArchivingThread extends NotifyingThread {
 
-    private ArchivingThreadContext context;
 
     public ArchivingThread(String name, ArchivingThreadContext context) {
         this.setName(name);
@@ -29,16 +28,6 @@ public class ArchivingThread extends NotifyingThread {
             e.printStackTrace();
         }
 
-    }
-
-    @Override
-    public Date getStartTime() {
-        return this.startTime;
-    }
-
-    @Override
-    public Date getEndTime() {
-        return this.endTime;
     }
 
 }
