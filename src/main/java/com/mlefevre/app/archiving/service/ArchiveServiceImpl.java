@@ -70,7 +70,6 @@ public class ArchiveServiceImpl implements ArchiveService {
     @Override
     public void archiveDocuments(List<String> documentIds) throws ArchiveException {
         for(String documentId : documentIds) {
-            System.out.println("Document: " + documentId);
             this.archiveDocument(documentId);
         }
     }

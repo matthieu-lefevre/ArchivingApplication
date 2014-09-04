@@ -1,5 +1,6 @@
 package com.mlefevre.app.archiving.service;
 
+import com.mlefevre.app.archiving.domain.model.ThreadReport;
 import com.mlefevre.app.archiving.exception.ThreadingException;
 import com.mlefevre.app.archiving.threading.ArchiveThreadPoolExecutor;
 import com.mlefevre.app.archiving.threading.ArchivingThread;
@@ -13,6 +14,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -70,8 +72,15 @@ public class ArchiveThreadingServiceImpl implements ArchiveThreadingService {
 
     @Override
     public void execute(List<NotifyingThread> threads) throws ThreadingException {
-        ArchiveThreadPoolExecutor executor = new ArchiveThreadPoolExecutor(threads);
+        ArchiveThreadPoolExecutor<NotifyingThread> executor = new ArchiveThreadPoolExecutor(threads);
+        executor.setStartTime(new Date());
         executor.execute(THREAD_POOL_SIZE);
+        executor.setEndTime(new Date());
+
+        for(ThreadReport report : executor.getReports()) {
+            System.out.println(report);
+        }
+        System.out.println("Archiving Execution Time: " + executor.getExecutionTime());
     }
 
     private int getLastDocumentIdIndexForThread(int currentThread, int threadsNb, int documentIdStartIndex, int documentIdsNb) {
